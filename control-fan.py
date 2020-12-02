@@ -12,11 +12,18 @@ def main():
     GPIO.setup(12,GPIO.OUT)
     pwm = GPIO.PWM(12,500)
 
-    while True:
-            
+    while True:         
+        
+        get_temp = os.popen('vcgencmd measure_temp').readline()
+        str_temp = get_temp[5] + get_temp[6]
+        temp = int(str_temp)
+
+        #normalize the temp from (30-80) to 0-100
+
+        normalized_temp = (temp-30) * 2
         
         cpu = psutil.cpu_percent()
-        pwm.start(cpu)
+        pwm.start( (cpu + normalized_temp) / 2)
 
         time.sleep(2)
     
